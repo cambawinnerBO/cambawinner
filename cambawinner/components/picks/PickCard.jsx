@@ -3,7 +3,7 @@ import Badge from '../ui/Badge';
 
 const MONO = { fontFamily: "'JetBrains Mono', monospace" };
 
-export default function PickCard({ match, market, odds, stake, result, analysis }) {
+export default function PickCard({ match, market, odds, result, analysis }) {
   return (
     <Card>
       <div style={{ padding: '16px' }}>
@@ -29,7 +29,7 @@ export default function PickCard({ match, market, odds, stake, result, analysis 
             >
               {match}
             </p>
-            <p style={{ fontSize: '0.8125rem', color: '#5A6B85' }}>{market}</p>
+            <p style={{ fontSize: '0.8125rem', color: '#5A6B85', margin: 0 }}>{market}</p>
           </div>
           {result && (
             <div style={{ marginLeft: '12px', flexShrink: 0 }}>
@@ -38,38 +38,26 @@ export default function PickCard({ match, market, odds, stake, result, analysis 
           )}
         </div>
 
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'baseline' }}>
-          {odds != null && (
-            <div>
-              <span style={{ fontSize: '0.6875rem', color: '#A0A8B5', display: 'block', marginBottom: '1px' }}>
-                Cuota
-              </span>
-              <span style={{ ...MONO, fontSize: '1.125rem', fontWeight: 700, color: '#0A2540' }}>
-                {Number(odds).toFixed(2)}
-              </span>
-            </div>
-          )}
-          {stake != null && (
-            <div>
-              <span style={{ fontSize: '0.6875rem', color: '#A0A8B5', display: 'block', marginBottom: '1px' }}>
-                Stake
-              </span>
-              <span style={{ ...MONO, fontSize: '1.125rem', fontWeight: 700, color: '#0A2540' }}>
-                {stake}u
-              </span>
-            </div>
-          )}
-        </div>
+        {odds != null && (
+          <div style={{ marginBottom: analysis ? '12px' : 0 }}>
+            <span style={{ fontSize: '0.6875rem', color: '#A0A8B5', display: 'block', marginBottom: '1px' }}>
+              Cuota
+            </span>
+            <span style={{ ...MONO, fontSize: '1.125rem', fontWeight: 700, color: '#0A2540' }}>
+              {Number(odds).toFixed(2)}
+            </span>
+          </div>
+        )}
 
         {analysis && (
           <p
             style={{
-              marginTop: '10px',
               fontSize: '0.8125rem',
               color: '#5A6B85',
               lineHeight: 1.55,
-              paddingTop: '10px',
+              paddingTop: '12px',
               borderTop: '0.5px solid #E5E8EE',
+              margin: 0,
             }}
           >
             {analysis}

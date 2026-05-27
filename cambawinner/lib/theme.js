@@ -1,3 +1,5 @@
+export const BANKROLL_BASE = 1000;
+
 export const Theme = {
   Colors: {
     Navy:          '#0A2540',

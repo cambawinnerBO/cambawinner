@@ -46,7 +46,7 @@ export default function RootLayout({ children }) {
     <html lang="es" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body>
         <Header />
-        <main className="pb-14 md:pb-0">
+        <main className="pb-20 md:pb-0">
           {children}
         </main>
         <BottomNav />

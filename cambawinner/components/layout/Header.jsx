@@ -4,10 +4,9 @@ import { usePathname } from 'next/navigation';
 import { Theme } from '@/lib/theme';
 
 const NAV_LINKS = [
-  { href: '/',       label: 'Inicio' },
-  { href: '/cuotas', label: 'Cuotas' },
-  { href: '/picks',  label: 'Picks' },
-  { href: '/vip',    label: 'VIP' },
+  { href: '/',      label: 'Inicio' },
+  { href: '/picks', label: 'Picks' },
+  { href: '/vip',   label: 'VIP' },
 ];
 
 function NavLink({ href, label, isActive }) {
@@ -48,18 +47,25 @@ export default function Header() {
         borderBottom: '0.5px solid rgba(255,255,255,0.08)',
       }}
     >
-      <Link
-        href="/"
-        style={{
-          textDecoration: 'none',
-          fontWeight: 600,
-          fontSize: '20px',
-          letterSpacing: '-0.02em',
-          lineHeight: 1,
-        }}
-      >
-        <span style={{ color: '#ffffff' }}>Camba</span>
-        <span style={{ color: Theme.Colors.Green }}>Winner</span>
+      <Link href="/" style={{ textDecoration: 'none' }}>
+        <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
+          <img
+            src="/logo/cambawinner-isotipo.svg"
+            alt="CambaWinner logo"
+            width={32}
+            height={32}
+            style={{display:'block'}}
+          />
+          <span style={{
+            fontFamily:'Inter, sans-serif',
+            fontSize:'20px',
+            fontWeight:600,
+            letterSpacing:'-0.02em',
+            color:'#F5F7FA'
+          }}>
+            Camba<span style={{color:'#1D9E75'}}>Winner</span>
+          </span>
+        </div>
       </Link>
 
       <nav className="hidden md:flex items-center gap-6">

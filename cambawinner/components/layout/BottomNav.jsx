@@ -1,14 +1,13 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BarChart2, Star, Lock } from 'lucide-react';
+import { Home, Star, Lock } from 'lucide-react';
 import { Theme } from '@/lib/theme';
 
 const NAV_TABS = [
-  { href: '/',       label: 'Inicio', Icon: Home },
-  { href: '/cuotas', label: 'Cuotas', Icon: BarChart2 },
-  { href: '/picks',  label: 'Picks',  Icon: Star },
-  { href: '/vip',    label: 'VIP',    Icon: Lock },
+  { href: '/',      label: 'Inicio', Icon: Home },
+  { href: '/picks', label: 'Picks',  Icon: Star },
+  { href: '/vip',   label: 'VIP',    Icon: Lock },
 ];
 
 function NavTab({ href, label, Icon, isActive }) {
@@ -21,8 +20,8 @@ function NavTab({ href, label, Icon, isActive }) {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: '3px',
-        padding: '10px 0',
+        gap: '2px',
+        height: '100%',
         color: isActive ? Theme.Colors.Green : Theme.Colors.TextAccent,
         opacity: isActive ? 1 : 0.6,
         textDecoration: 'none',
@@ -30,7 +29,7 @@ function NavTab({ href, label, Icon, isActive }) {
       }}
     >
       <Icon size={22} strokeWidth={isActive ? 2 : 1.5} />
-      <span style={{ fontSize: '11px', fontWeight: isActive ? 600 : 400, letterSpacing: '0.02em' }}>
+      <span style={{ fontSize: '10px', fontWeight: isActive ? 600 : 400, letterSpacing: '0.03em' }}>
         {label}
       </span>
     </Link>
@@ -41,15 +40,12 @@ export default function BottomNav() {
   const pathname = usePathname();
   return (
     <nav
-      className="flex md:hidden"
+      className="flex md:hidden fixed bottom-0 left-0 right-0 z-50"
       style={{
-        position: 'fixed',
-        bottom: 0,
-        left: 0,
-        right: 0,
+        height: '64px',
         background: Theme.Colors.Navy,
-        borderTop: '0.5px solid rgba(255,255,255,0.1)',
-        zIndex: 50,
+        borderTop: '1px solid rgba(29,158,117,0.2)',
+        justifyContent: 'space-around',
       }}
     >
       {NAV_TABS.map(({ href, label, Icon }) => (
