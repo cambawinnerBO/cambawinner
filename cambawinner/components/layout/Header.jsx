@@ -53,6 +53,8 @@ export default function Header({ simple = false }) {
   const router              = useRouter();
   const { usuario, perfil, logout } = useAuth();
 
+  const mostrarBotonLogin = !usuario && pathname !== '/picks';
+
   async function handleLogout() {
     await logout();
     router.push('/');
@@ -141,7 +143,7 @@ export default function Header({ simple = false }) {
                 Salir
               </button>
             </>
-          ) : (
+          ) : mostrarBotonLogin ? (
             <Link
               href="/login"
               style={{
@@ -156,7 +158,7 @@ export default function Header({ simple = false }) {
             >
               Iniciar sesión
             </Link>
-          )}
+          ) : null}
         </div>
       )}
     </header>

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import PickCard from '@/components/picks/PickCard';
 import Button from '@/components/ui/Button';
 import { Theme } from '@/lib/theme';
+import { useAuth } from '@/lib/context/AuthContext';
 import {
   obtenerHistorialPicks,
   obtenerEstadisticasCompletas,
@@ -138,6 +139,31 @@ function VipBannerPicks() {
   );
 }
 
+// ── Muro de registro ───────────────────────────────────────────────────────
+
+function MuroRegistro() {
+  return (
+    <div style={{ textAlign: 'center', padding: '48px 24px', background: 'rgba(29,158,117,0.05)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: '12px', margin: '16px 0' }}>
+      <div style={{ fontSize: '32px', marginBottom: '12px' }}>🔒</div>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: 600, color: '#F5F7FA', margin: '0 0 8px' }}>
+        Accede o registrate para ver el historial
+      </p>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#B8D4F4', margin: '0 0 24px', lineHeight: 1.5 }}>
+        Accedé gratis a todos los picks publicados con sus resultados y análisis.
+        Sin costo, sin compromiso.
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '280px', margin: '0 auto' }}>
+        <a href="/registro" style={{ background: '#1D9E75', color: 'white', padding: '12px 24px', borderRadius: '8px', fontFamily: 'Inter, sans-serif', fontWeight: 600, fontSize: '15px', textDecoration: 'none', textAlign: 'center' }}>
+          Crear cuenta gratis
+        </a>
+        <a href="/login" style={{ background: 'transparent', color: '#1D9E75', border: '1px solid #1D9E75', padding: '12px 24px', borderRadius: '8px', fontFamily: 'Inter, sans-serif', fontWeight: 500, fontSize: '15px', textDecoration: 'none', textAlign: 'center' }}>
+          Ya tengo cuenta
+        </a>
+      </div>
+    </div>
+  );
+}
+
 // ── Footer ─────────────────────────────────────────────────────────────────
 
 function PageFooter() {
@@ -153,17 +179,35 @@ function PageFooter() {
 
 // ── Page ───────────────────────────────────────────────────────────────────
 
+const CONTAINER = { maxWidth: '600px', margin: '0 auto', padding: `16px 16px 80px` };
+
+function TituloPagina() {
+  return (
+    <div style={{ marginBottom: '16px' }}>
+      <h1 style={{ fontSize: '1.375rem', fontWeight: 700, color: '#F5F7FA', marginBottom: '4px' }}>
+        Historial de picks
+      </h1>
+      <p style={{ fontSize: '12px', color: '#B8D4F4', margin: 0 }}>
+        Todos los pronósticos publicados con resultado verificable
+      </p>
+    </div>
+  );
+}
+
 export default function PicksPage() {
+  const { usuario, loading: authLoading } = useAuth();
   const [picks,   setPicks]   = useState([]);
   const [stats,   setStats]   = useState(null);
   const [filtro,  setFiltro]  = useState('todos');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!usuario) return;
     obtenerEstadisticasCompletas().then(setStats);
-  }, []);
+  }, [usuario]);
 
   useEffect(() => {
+    if (!usuario) return;
     async function cargarPicks() {
       setLoading(true);
       const { data } = await obtenerHistorialPicks(filtro);
@@ -171,24 +215,26 @@ export default function PicksPage() {
       setLoading(false);
     }
     cargarPicks();
-  }, [filtro]);
+  }, [filtro, usuario]);
+
+  if (!authLoading && !usuario) {
+    return (
+      <div style={CONTAINER}>
+        <TituloPagina />
+        <MuroRegistro />
+      </div>
+    );
+  }
 
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: `${Theme.Spacing.LG} ${Theme.Spacing.LG} 80px` }}>
-      <div style={{ marginBottom: Theme.Spacing.LG }}>
-        <h1 style={{ fontSize: '1.375rem', fontWeight: 700, color: Theme.Colors.TextInverse, marginBottom: '4px' }}>
-          Historial de picks
-        </h1>
-        <p style={{ fontSize: '12px', color: '#B8D4F4', margin: 0 }}>
-          Todos los pronósticos publicados con resultado verificable
-        </p>
-      </div>
+    <div style={CONTAINER}>
+      <TituloPagina />
 
       <StatsRow stats={stats} />
       <BarraResultados stats={stats} />
       <FiltroTabs filtro={filtro} onFiltro={setFiltro} stats={stats} />
 
-      {loading ? (
+      {authLoading || loading ? (
         [0, 1, 2].map(i => <PickSkeleton key={i} />)
       ) : picks.length === 0 ? (
         <p style={{ color: Theme.Colors.TextAccent, fontSize: '0.9375rem', textAlign: 'center', padding: `${Theme.Spacing.XL} 0` }}>
