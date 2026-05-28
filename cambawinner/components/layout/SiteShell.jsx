@@ -6,14 +6,15 @@ import BottomNav from './BottomNav';
 export default function SiteShell({ children }) {
   const pathname   = usePathname();
   const enAdmin    = pathname?.startsWith('/admin');
+  const esAuthPage = pathname === '/login' || pathname === '/registro';
 
   return (
     <>
-      {!enAdmin && <Header />}
-      <main className={!enAdmin ? 'pb-20 md:pb-0' : undefined}>
+      {!enAdmin && <Header simple={esAuthPage} />}
+      <main className={!enAdmin && !esAuthPage ? 'pb-20 md:pb-0' : undefined}>
         {children}
       </main>
-      {!enAdmin && <BottomNav />}
+      {!enAdmin && !esAuthPage && <BottomNav />}
     </>
   );
 }

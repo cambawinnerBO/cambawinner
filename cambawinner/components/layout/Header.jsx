@@ -48,7 +48,7 @@ function VipBadge() {
   );
 }
 
-export default function Header() {
+export default function Header({ simple = false }) {
   const pathname            = usePathname();
   const router              = useRouter();
   const { usuario, perfil, logout } = useAuth();
@@ -94,67 +94,71 @@ export default function Header() {
         </div>
       </Link>
 
-      <nav className="hidden md:flex items-center gap-6">
-        {NAV_LINKS.map(({ href, label }) => (
-          <NavLink key={href} href={href} label={label} isActive={pathname === href} />
-        ))}
-      </nav>
+      {!simple && (
+        <nav className="hidden md:flex items-center gap-6">
+          {NAV_LINKS.map(({ href, label }) => (
+            <NavLink key={href} href={href} label={label} isActive={pathname === href} />
+          ))}
+        </nav>
+      )}
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        {usuario ? (
-          <>
-            {perfil?.role === 'admin' && !pathname?.startsWith('/admin') && (
-              <Link
-                href="/admin"
+      {!simple && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {usuario ? (
+            <>
+              {perfil?.role === 'admin' && !pathname?.startsWith('/admin') && (
+                <Link
+                  href="/admin"
+                  style={{
+                    background: Theme.Colors.Green,
+                    color: '#ffffff',
+                    borderRadius: '6px',
+                    padding: '6px 14px',
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                  }}
+                >
+                  Panel Admin
+                </Link>
+              )}
+              <span style={{ fontSize: '14px', color: Theme.Colors.TextAccent, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                {perfil?.nombre ?? usuario.email}
+                {perfil?.role === 'vip' && <VipBadge />}
+              </span>
+              <button
+                onClick={handleLogout}
                 style={{
-                  background: Theme.Colors.Green,
-                  color: '#ffffff',
-                  borderRadius: '6px',
-                  padding: '6px 14px',
+                  background: 'transparent',
+                  border: '1px solid rgba(184,212,244,0.3)',
+                  borderRadius: Theme.Radius.SM,
+                  color: Theme.Colors.TextAccent,
                   fontSize: '13px',
-                  fontWeight: 600,
-                  textDecoration: 'none',
+                  padding: '5px 12px',
+                  cursor: 'pointer',
                 }}
               >
-                Panel Admin
-              </Link>
-            )}
-            <span style={{ fontSize: '14px', color: Theme.Colors.TextAccent, display: 'flex', alignItems: 'center', gap: '6px' }}>
-              {perfil?.nombre ?? usuario.email}
-              {perfil?.role === 'vip' && <VipBadge />}
-            </span>
-            <button
-              onClick={handleLogout}
+                Salir
+              </button>
+            </>
+          ) : (
+            <Link
+              href="/login"
               style={{
-                background: 'transparent',
-                border: '1px solid rgba(184,212,244,0.3)',
+                background: Theme.Colors.Green,
+                color: '#ffffff',
                 borderRadius: Theme.Radius.SM,
-                color: Theme.Colors.TextAccent,
+                padding: '6px 14px',
                 fontSize: '13px',
-                padding: '5px 12px',
-                cursor: 'pointer',
+                fontWeight: 600,
+                textDecoration: 'none',
               }}
             >
-              Salir
-            </button>
-          </>
-        ) : (
-          <Link
-            href="/login"
-            style={{
-              background: Theme.Colors.Green,
-              color: '#ffffff',
-              borderRadius: Theme.Radius.SM,
-              padding: '6px 14px',
-              fontSize: '13px',
-              fontWeight: 600,
-              textDecoration: 'none',
-            }}
-          >
-            Iniciar sesión
-          </Link>
-        )}
-      </div>
+              Iniciar sesión
+            </Link>
+          )}
+        </div>
+      )}
     </header>
   );
 }
