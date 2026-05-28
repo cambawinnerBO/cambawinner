@@ -1,7 +1,8 @@
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Theme } from '@/lib/theme';
+import { useAuth } from '@/lib/context/AuthContext';
 
 const NAV_LINKS = [
   { href: '/',      label: 'Inicio' },
@@ -30,8 +31,33 @@ function NavLink({ href, label, isActive }) {
   );
 }
 
+function VipBadge() {
+  return (
+    <span style={{
+      background: 'rgba(29,158,117,0.15)',
+      color: Theme.Colors.Green,
+      border: `1px solid ${Theme.Colors.Green}`,
+      borderRadius: '9999px',
+      padding: '2px 8px',
+      fontSize: '11px',
+      fontWeight: 700,
+      letterSpacing: '0.06em',
+    }}>
+      VIP
+    </span>
+  );
+}
+
 export default function Header() {
-  const pathname = usePathname();
+  const pathname            = usePathname();
+  const router              = useRouter();
+  const { usuario, perfil, logout } = useAuth();
+
+  async function handleLogout() {
+    await logout();
+    router.push('/');
+  }
+
   return (
     <header
       style={{
@@ -61,7 +87,7 @@ export default function Header() {
             fontSize:'20px',
             fontWeight:600,
             letterSpacing:'-0.02em',
-            color:'#F5F7FA'
+            color:'#F5F7FA',
           }}>
             Camba<span style={{color:'#1D9E75'}}>Winner</span>
           </span>
@@ -70,14 +96,65 @@ export default function Header() {
 
       <nav className="hidden md:flex items-center gap-6">
         {NAV_LINKS.map(({ href, label }) => (
-          <NavLink
-            key={href}
-            href={href}
-            label={label}
-            isActive={pathname === href}
-          />
+          <NavLink key={href} href={href} label={label} isActive={pathname === href} />
         ))}
       </nav>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        {usuario ? (
+          <>
+            {perfil?.role === 'admin' && !pathname?.startsWith('/admin') && (
+              <Link
+                href="/admin"
+                style={{
+                  background: Theme.Colors.Green,
+                  color: '#ffffff',
+                  borderRadius: '6px',
+                  padding: '6px 14px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                }}
+              >
+                Panel Admin
+              </Link>
+            )}
+            <span style={{ fontSize: '14px', color: Theme.Colors.TextAccent, display: 'flex', alignItems: 'center', gap: '6px' }}>
+              {perfil?.nombre ?? usuario.email}
+              {perfil?.role === 'vip' && <VipBadge />}
+            </span>
+            <button
+              onClick={handleLogout}
+              style={{
+                background: 'transparent',
+                border: '1px solid rgba(184,212,244,0.3)',
+                borderRadius: Theme.Radius.SM,
+                color: Theme.Colors.TextAccent,
+                fontSize: '13px',
+                padding: '5px 12px',
+                cursor: 'pointer',
+              }}
+            >
+              Salir
+            </button>
+          </>
+        ) : (
+          <Link
+            href="/login"
+            style={{
+              background: Theme.Colors.Green,
+              color: '#ffffff',
+              borderRadius: Theme.Radius.SM,
+              padding: '6px 14px',
+              fontSize: '13px',
+              fontWeight: 600,
+              textDecoration: 'none',
+            }}
+          >
+            Iniciar sesión
+          </Link>
+        )}
+      </div>
     </header>
   );
 }

@@ -1,0 +1,83 @@
+import { supabase } from '@/lib/supabase';
+
+export async function publicarPick(datos) {
+  if (datos.is_pick_del_dia) {
+    await supabase.from('picks').update({ is_pick_del_dia: false }).eq('is_pick_del_dia', true);
+  }
+  const { data, error } = await supabase
+    .from('picks')
+    .insert({ ...datos, result: 'pendiente' })
+    .select()
+    .single();
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function obtenerPickDelDia() {
+  const { data, error } = await supabase
+    .from('picks')
+    .select('*')
+    .eq('is_pick_del_dia', true)
+    .order('published_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function obtenerPicksPendientes() {
+  const { data, error } = await supabase
+    .from('picks')
+    .select('*')
+    .eq('result', 'pendiente')
+    .order('published_at', { ascending: false });
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function marcarResultado(id, result, odds, stake) {
+  let profit_bs = null;
+  if (result === 'ganado')  profit_bs = parseFloat(((odds - 1) * stake * 10).toFixed(2));
+  if (result === 'perdido') profit_bs = -(stake * 10);
+  if (result === 'anulado') profit_bs = 0;
+
+  const { data, error } = await supabase
+    .from('picks')
+    .update({ result, profit_bs })
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function obtenerUltimosPicks(limite = 5) {
+  const { data, error } = await supabase
+    .from('picks')
+    .select('*')
+    .eq('is_vip', false)
+    .order('published_at', { ascending: false })
+    .limit(limite);
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function obtenerEstadisticas() {
+  const { data: picks, error } = await supabase
+    .from('picks')
+    .select('stake, result, profit_bs');
+
+  if (error || !picks) return { totalPicks: 0, ganancia: 0, yield: 0 };
+
+  const totalPicks   = picks.length;
+  const resueltos    = picks.filter(p => p.result !== 'pendiente' && p.profit_bs != null);
+  const ganancia     = resueltos.reduce((sum, p) => sum + Number(p.profit_bs), 0);
+  const totalApostado = resueltos.reduce((sum, p) => sum + (p.stake * 10), 0);
+  const yieldPct     = totalApostado > 0 ? (ganancia / totalApostado) * 100 : 0;
+
+  return {
+    totalPicks,
+    ganancia: Math.round(ganancia),
+    yield: parseFloat(yieldPct.toFixed(1)),
+  };
+}

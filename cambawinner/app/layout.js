@@ -1,7 +1,7 @@
 import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
-import Header from '@/components/layout/Header';
-import BottomNav from '@/components/layout/BottomNav';
+import { AuthProvider } from '@/lib/context/AuthContext';
+import SiteShell from '@/components/layout/SiteShell';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -45,11 +45,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="es" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <body>
-        <Header />
-        <main className="pb-20 md:pb-0">
-          {children}
-        </main>
-        <BottomNav />
+        <AuthProvider>
+          <SiteShell>{children}</SiteShell>
+        </AuthProvider>
       </body>
     </html>
   );
