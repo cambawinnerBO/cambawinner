@@ -10,9 +10,10 @@ export default function RegistroPage() {
   const router  = useRouter();
   const { registrar } = useAuth();
 
-  const [form, setForm]     = useState({ nombre: '', username: '', email: '', password: '' });
-  const [error, setError]   = useState(null);
+  const [form, setForm]       = useState({ nombre: '', username: '', email: '', password: '' });
+  const [error, setError]     = useState(null);
   const [loading, setLoading] = useState(false);
+  const [verPassword, setVerPassword] = useState(false);
 
   function handleChange(e) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -78,7 +79,22 @@ export default function RegistroPage() {
           <Field label="Nombre" name="nombre" type="text" value={form.nombre} onChange={handleChange} placeholder="Tu nombre" />
           <Field label="Usuario" name="username" type="text" value={form.username} onChange={handleChange} placeholder="@usuario" />
           <Field label="Email" name="email" type="email" value={form.email} onChange={handleChange} placeholder="tu@email.com" />
-          <Field label="Contraseña" name="password" type="password" value={form.password} onChange={handleChange} placeholder="Mínimo 6 caracteres" />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+            <label style={{ fontSize: '12px', fontWeight: 600, color: Theme.Colors.TextSecondary, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Contraseña</label>
+            <div style={{ position: 'relative' }}>
+              <input
+                name="password"
+                type={verPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Mínimo 6 caracteres"
+                style={{ background: '#ffffff', border: '1px solid rgba(10,37,64,0.15)', borderRadius: Theme.Radius.SM, padding: '10px 44px 10px 12px', fontSize: '15px', color: Theme.Colors.TextPrimary, outline: 'none', width: '100%', boxSizing: 'border-box' }}
+              />
+              <button type="button" onClick={() => setVerPassword(!verPassword)} aria-label={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: '0', color: '#5A6B85', fontSize: '18px', lineHeight: 1 }}>
+                {verPassword ? '🙈' : '👁️'}
+              </button>
+            </div>
+          </div>
 
           {error && (
             <p style={{ fontSize: '0.8125rem', color: Theme.Colors.Error, background: 'rgba(211,47,47,0.08)', border: `1px solid ${Theme.Colors.Error}`, borderRadius: Theme.Radius.SM, padding: '10px 12px', margin: 0 }}>
