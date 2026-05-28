@@ -8,7 +8,6 @@ import { Theme } from '@/lib/theme';
 import {
   obtenerPickDelDia,
   obtenerUltimosPicks,
-  obtenerEstadisticas,
 } from '@/lib/services/picksService';
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -53,37 +52,6 @@ function StatItem({ label, value }) {
 
 function StatDivider() {
   return <div style={{ width: '1px', height: '32px', background: 'rgba(10,37,64,0.1)', flexShrink: 0 }} />;
-}
-
-// ── Bloque de estadísticas ─────────────────────────────────────────────────
-
-function YieldStatsRow({ stats, loading }) {
-  const NUM = { ...MONO, fontSize: '20px', fontWeight: 600, color: Theme.Colors.Green };
-  const LBL = { fontSize: '11px', fontWeight: 400, color: Theme.Colors.TextAccent, textTransform: 'uppercase', letterSpacing: '0.06em', marginTop: '2px' };
-  const DIV = { width: '1px', height: '32px', background: 'rgba(29,158,117,0.2)', flexShrink: 0 };
-
-  const yieldVal   = stats.yield  ?? 0;
-  const isPositive = yieldVal >= 0;
-  const ganancia   = stats.ganancia ?? 0;
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', background: 'rgba(29,158,117,0.08)', border: '1px solid rgba(29,158,117,0.2)', borderRadius: Theme.Radius.LG, padding: Theme.Spacing.LG, marginBottom: Theme.Spacing.MD }}>
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <span style={NUM}>{loading ? '…' : `${isPositive ? '+' : ''}${yieldVal.toFixed(1)}%`}</span>
-        <span style={LBL}>Rentabilidad</span>
-      </div>
-      <div style={DIV} />
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <span style={NUM}>{loading ? '…' : stats.totalPicks}</span>
-        <span style={LBL}>Picks</span>
-      </div>
-      <div style={DIV} />
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <span style={NUM}>{loading ? '…' : `${ganancia >= 0 ? '+' : ''}Bs ${ganancia}`}</span>
-        <span style={LBL}>Ganancia</span>
-      </div>
-    </div>
-  );
 }
 
 // ── Skeleton del card ──────────────────────────────────────────────────────
@@ -189,10 +157,9 @@ function PickDelDiaCard({ pick }) {
 
 // ── Sección 1 — Pick del Día ───────────────────────────────────────────────
 
-function SeccionPickDelDia({ pick, stats, loading }) {
+function SeccionPickDelDia({ pick, loading }) {
   return (
     <section style={{ marginBottom: Theme.Spacing.XXL }}>
-      <YieldStatsRow stats={stats} loading={loading} />
       {loading
         ? <PickDelDiaSkeleton />
         : pick
@@ -274,19 +241,16 @@ function PageFooter() {
 export default function HomePage() {
   const [pickDelDia,   setPickDelDia]   = useState(null);
   const [ultimosPicks, setUltimosPicks] = useState([]);
-  const [stats,        setStats]        = useState({ totalPicks: 0, ganancia: 0, yield: 0 });
   const [loading,      setLoading]      = useState(true);
 
   useEffect(() => {
     async function cargarDatos() {
-      const [pick, picks, estadisticas] = await Promise.all([
+      const [pick, picks] = await Promise.all([
         obtenerPickDelDia(),
         obtenerUltimosPicks(3),
-        obtenerEstadisticas(),
       ]);
       setPickDelDia(pick.data);
       setUltimosPicks(picks.data ?? []);
-      setStats(estadisticas);
       setLoading(false);
     }
     cargarDatos();
@@ -294,7 +258,7 @@ export default function HomePage() {
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: `${Theme.Spacing.LG} ${Theme.Spacing.LG} 80px` }}>
-      <SeccionPickDelDia pick={pickDelDia} stats={stats} loading={loading} />
+      <SeccionPickDelDia pick={pickDelDia} loading={loading} />
       <SeccionUltimosPicks picks={ultimosPicks} loading={loading} />
       <VipBanner />
       <PageFooter />
