@@ -81,3 +81,49 @@ export async function obtenerEstadisticas() {
     yield: parseFloat(yieldPct.toFixed(1)),
   };
 }
+
+export async function obtenerHistorialPicks(filtro = 'todos') {
+  let query = supabase
+    .from('picks')
+    .select('*')
+    .eq('is_vip', false)
+    .order('published_at', { ascending: false });
+
+  if (filtro === 'ganados')    query = query.eq('result', 'ganado');
+  if (filtro === 'perdidos')   query = query.eq('result', 'perdido');
+  if (filtro === 'pendientes') query = query.eq('result', 'pendiente');
+
+  const { data, error } = await query;
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function obtenerEstadisticasCompletas() {
+  const { data: picks, error } = await supabase
+    .from('picks')
+    .select('result, profit_bs, stake')
+    .eq('is_vip', false);
+
+  if (error || !picks) return {
+    totalPicks: 0, ganados: 0, perdidos: 0,
+    pendientes: 0, anulados: 0, ganancia: 0, yield: 0,
+  };
+
+  const totalPicks = picks.length;
+  const ganados    = picks.filter(p => p.result === 'ganado').length;
+  const perdidos   = picks.filter(p => p.result === 'perdido').length;
+  const pendientes = picks.filter(p => p.result === 'pendiente').length;
+  const anulados   = picks.filter(p => p.result === 'anulado').length;
+  const ganancia   = picks.reduce((sum, p) => sum + (Number(p.profit_bs) || 0), 0);
+  const yieldPct   = totalPicks > 0 ? (ganancia / (totalPicks * 10)) * 100 : 0;
+
+  return {
+    totalPicks,
+    ganados,
+    perdidos,
+    pendientes,
+    anulados,
+    ganancia: Math.round(ganancia),
+    yield: parseFloat(yieldPct.toFixed(1)),
+  };
+}
