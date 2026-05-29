@@ -117,9 +117,13 @@ function PickDelDiaCard({ pick }) {
         {pick.league}{fechaFormateada ? ` · ${fechaFormateada}` : ''}
       </p>
 
-      <p style={{ textAlign: 'center', fontSize: '1rem', fontWeight: 500, color: Theme.Colors.TextPrimary, marginBottom: Theme.Spacing.LG }}>
-        {pick.market}
-      </p>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', margin: '10px 0' }}>
+        <span style={{ color: '#1D9E75', fontSize: '16px', fontWeight: 700 }}>▶</span>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '17px', fontWeight: 600, color: '#0A2540', margin: 0, letterSpacing: '-0.01em' }}>
+          {pick.market}
+        </p>
+        <span style={{ color: '#1D9E75', fontSize: '16px', fontWeight: 700 }}>◀</span>
+      </div>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: Theme.Spacing.MD }}>
         <StatItem label="Cuota"     value={Number(pick.odds).toFixed(2)} />
@@ -146,11 +150,6 @@ function PickDelDiaCard({ pick }) {
         </p>
       </div>
 
-      {pick.result && pick.result !== 'pendiente' && (
-        <div style={{ textAlign: 'center', marginTop: Theme.Spacing.MD }}>
-          <Badge result={pick.result} />
-        </div>
-      )}
     </div>
   );
 }

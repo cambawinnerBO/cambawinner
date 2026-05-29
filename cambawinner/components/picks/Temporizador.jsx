@@ -3,18 +3,21 @@ import { useState, useEffect } from 'react';
 
 const MONO = { fontFamily: "'JetBrains Mono', monospace" };
 
-const BADGE = {
-  ganado:  { bg: 'rgba(29,158,117,0.12)',   border: '#1D9E75', color: '#1D9E75', label: '✓ GANADO'  },
-  perdido: { bg: 'rgba(211,47,47,0.10)',     border: '#D32F2F', color: '#D32F2F', label: '✗ PERDIDO' },
-  anulado: { bg: 'rgba(136,135,128,0.10)',   border: '#888780', color: '#888780', label: '— ANULADO' },
+const RESULTADO = {
+  ganado:  { bg: 'rgba(29,158,117,0.1)',  border: '#1D9E75', color: '#1D9E75', icono: '✓', label: 'GANADO'  },
+  perdido: { bg: 'rgba(211,47,47,0.08)',  border: '#D32F2F', color: '#D32F2F', icono: '✗', label: 'PERDIDO' },
+  anulado: { bg: 'rgba(136,135,128,0.1)', border: '#888780', color: '#888780', icono: '—', label: 'ANULADO' },
 };
 
 function BadgeResultado({ result }) {
-  const cfg = BADGE[result];
+  const cfg = RESULTADO[result];
   if (!cfg) return null;
   return (
-    <div style={{ background: cfg.bg, border: `1px solid ${cfg.border}`, borderRadius: '8px', padding: '8px 16px', textAlign: 'center' }}>
-      <span style={{ ...MONO, color: cfg.color, fontWeight: 600, fontSize: '15px' }}>{cfg.label}</span>
+    <div style={{ textAlign: 'center', margin: '8px 0' }}>
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px', background: cfg.bg, border: `1.5px solid ${cfg.border}`, borderRadius: '999px', padding: '10px 24px' }}>
+        <span style={{ fontSize: '14px', fontWeight: 900, color: cfg.color, fontFamily: 'Inter, sans-serif' }}>{cfg.icono}</span>
+        <span style={{ ...MONO, fontSize: '15px', fontWeight: 700, color: cfg.color, letterSpacing: '0.08em' }}>{cfg.label}</span>
+      </div>
     </div>
   );
 }
