@@ -15,11 +15,22 @@ function formatFechaPublicada(iso) {
   });
 }
 
+function formatearHoraBolivia(fechaISO) {
+  if (!fechaISO) return '';
+  return new Date(fechaISO).toLocaleTimeString('es-BO', {
+    timeZone: 'America/La_Paz',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+}
+
 export default function PickCard({
   match, league, market, odds, stake,
   result, analysis, published_at, match_date, profit_bs,
 }) {
   const fecha = formatFechaPublicada(published_at);
+  const hora  = formatearHoraBolivia(match_date);
 
   const montoApostado = stake * 10;
   const tieneResultado = (result === 'ganado' || result === 'perdido') && profit_bs != null;
@@ -37,7 +48,7 @@ export default function PickCard({
       </div>
 
       <p style={{ fontSize: '12px', color: Theme.Colors.TextSecondary, margin: '0 0 4px' }}>
-        {league}{fecha ? ` · ${fecha}` : ''}
+        {league}{fecha ? ` · ${fecha}` : ''}{hora ? ` · ${hora}` : ''}
       </p>
 
       <p style={{ fontSize: '13px', color: Theme.Colors.TextSecondary, margin: '0 0 10px' }}>{market}</p>
