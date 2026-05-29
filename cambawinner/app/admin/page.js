@@ -84,9 +84,8 @@ function ResultChip({ result }) {
 
 function boliviaToUTC(fechaLocal) {
   if (!fechaLocal) return null;
-  const fecha = new Date(fechaLocal);
-  const utc   = new Date(fecha.getTime() + (4 * 60 * 60 * 1000));
-  return utc.toISOString();
+  const [fecha, hora] = fechaLocal.split('T');
+  return new Date(`${fecha}T${hora}:00-04:00`).toISOString();
 }
 
 const FORM0 = { match: '', league: '', match_date: '', market: '', odds: '', stake: '3', confidence: 'Alta', analysis: '', is_vip: false, is_pick_del_dia: true };
