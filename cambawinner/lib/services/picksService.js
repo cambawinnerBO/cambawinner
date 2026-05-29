@@ -56,6 +56,7 @@ export async function obtenerUltimosPicks(limite = 5) {
     .from('picks')
     .select('*')
     .eq('is_vip', false)
+    .eq('is_pick_del_dia', false)
     .order('published_at', { ascending: false })
     .limit(limite);
   if (error) return { data: null, error: error.message };
@@ -63,22 +64,24 @@ export async function obtenerUltimosPicks(limite = 5) {
 }
 
 export async function obtenerEstadisticas() {
-  const { data: picks, error } = await supabase
+  const { data: resueltos, error } = await supabase
     .from('picks')
-    .select('stake, result, profit_bs');
+    .select('stake, profit_bs')
+    .in('result', ['ganado', 'perdido', 'anulado']);
 
-  if (error || !picks) return { totalPicks: 0, ganancia: 0, yield: 0 };
+  if (error || !resueltos || resueltos.length === 0)
+    return { totalPicks: 0, ganancia: 0, yield: 0 };
 
-  const totalPicks   = picks.length;
-  const resueltos    = picks.filter(p => p.result !== 'pendiente' && p.profit_bs != null);
-  const ganancia     = resueltos.reduce((sum, p) => sum + Number(p.profit_bs), 0);
   const totalApostado = resueltos.reduce((sum, p) => sum + (p.stake * 10), 0);
-  const yieldPct     = totalApostado > 0 ? (ganancia / totalApostado) * 100 : 0;
+  const ganancia      = resueltos.reduce((sum, p) => sum + (p.profit_bs || 0), 0);
+  const yieldPct      = totalApostado > 0
+    ? Math.round((ganancia / totalApostado) * 1000) / 10
+    : 0;
 
   return {
-    totalPicks,
+    totalPicks: resueltos.length,
     ganancia: Math.round(ganancia),
-    yield: parseFloat(yieldPct.toFixed(1)),
+    yield: yieldPct,
   };
 }
 
@@ -114,8 +117,13 @@ export async function obtenerEstadisticasCompletas() {
   const perdidos   = picks.filter(p => p.result === 'perdido').length;
   const pendientes = picks.filter(p => p.result === 'pendiente').length;
   const anulados   = picks.filter(p => p.result === 'anulado').length;
-  const ganancia   = picks.reduce((sum, p) => sum + (Number(p.profit_bs) || 0), 0);
-  const yieldPct   = totalPicks > 0 ? (ganancia / (totalPicks * 10)) * 100 : 0;
+
+  const resueltos     = picks.filter(p => p.result !== 'pendiente' && p.profit_bs != null);
+  const totalApostado = resueltos.reduce((sum, p) => sum + (p.stake * 10), 0);
+  const ganancia      = resueltos.reduce((sum, p) => sum + (p.profit_bs || 0), 0);
+  const yieldPct      = totalApostado > 0
+    ? Math.round((ganancia / totalApostado) * 1000) / 10
+    : 0;
 
   return {
     totalPicks,
@@ -124,6 +132,6 @@ export async function obtenerEstadisticasCompletas() {
     pendientes,
     anulados,
     ganancia: Math.round(ganancia),
-    yield: parseFloat(yieldPct.toFixed(1)),
+    yield: yieldPct,
   };
 }

@@ -21,15 +21,13 @@ export default function PickCard({
 }) {
   const fecha = formatFechaPublicada(published_at);
 
-  let profitLabel = null;
-  let profitColor = Theme.Colors.TextMuted;
-  if (result === 'ganado' && profit_bs != null) {
-    profitLabel = `Profit: +Bs ${Math.abs(Math.round(profit_bs))}`;
-    profitColor = Theme.Colors.Green;
-  } else if (result === 'perdido' && profit_bs != null) {
-    profitLabel = `Loss: -Bs ${Math.abs(Math.round(profit_bs))}`;
-    profitColor = Theme.Colors.Error;
-  }
+  const montoApostado = stake * 10;
+  const tieneResultado = (result === 'ganado' || result === 'perdido') && profit_bs != null;
+  const retornoLabel = result === 'ganado'
+    ? `+Bs ${Math.abs(Math.round(profit_bs))}`
+    : `-Bs ${Math.abs(Math.round(profit_bs ?? montoApostado))}`;
+  const retornoColor = result === 'ganado' ? Theme.Colors.Green : Theme.Colors.Error;
+  const retornoTexto = result === 'ganado' ? 'Retorno' : 'Pérdida';
 
   return (
     <div style={{ background: Theme.Colors.Surface, borderRadius: Theme.Radius.MD, border: '0.5px solid rgba(10,37,64,0.1)', padding: '16px', marginBottom: '10px' }}>
@@ -53,10 +51,22 @@ export default function PickCard({
           <span style={{ fontSize: '10px', color: Theme.Colors.TextMuted, display: 'block', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Stake</span>
           <span style={{ ...MONO, fontSize: '14px', fontWeight: 700, color: Theme.Colors.TextPrimary }}>{stake}/10</span>
         </div>
-        {profitLabel && (
-          <span style={{ ...MONO, fontSize: '13px', fontWeight: 600, color: profitColor }}>{profitLabel}</span>
-        )}
+        <div>
+          <span style={{ fontSize: '10px', color: Theme.Colors.TextMuted, display: 'block', textTransform: 'uppercase', letterSpacing: '0.06em' }}>Apostado</span>
+          <span style={{ ...MONO, fontSize: '14px', fontWeight: 700, color: Theme.Colors.TextSecondary }}>Bs {montoApostado}</span>
+        </div>
       </div>
+
+      {tieneResultado && (
+        <div style={{ borderTop: '0.5px solid rgba(10,37,64,0.08)', paddingTop: '8px', marginBottom: '10px' }}>
+          <span style={{ fontSize: '10px', color: Theme.Colors.TextMuted, display: 'block', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>Resultado</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span style={{ ...MONO, fontSize: '13px', color: Theme.Colors.TextSecondary }}>Apostado: Bs {montoApostado}</span>
+            <span style={{ fontSize: '13px', color: Theme.Colors.TextSecondary }}>→</span>
+            <span style={{ ...MONO, fontSize: '13px', fontWeight: 700, color: retornoColor }}>{retornoTexto}: {retornoLabel}</span>
+          </div>
+        </div>
+      )}
 
       {result === 'pendiente' && match_date && (
         <div style={{ marginBottom: '10px' }}>

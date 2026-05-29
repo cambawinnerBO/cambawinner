@@ -187,7 +187,7 @@ function SeccionUltimosPicks({ picks, loading }) {
         </div>
       ) : picks.length === 0 ? (
         <p style={{ color: Theme.Colors.TextAccent, fontSize: '0.9375rem', textAlign: 'center', padding: `${Theme.Spacing.XL} 0` }}>
-          Aún no hay picks publicados.
+          Los picks anteriores aparecerán aquí.
         </p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: Theme.Spacing.LG }}>
