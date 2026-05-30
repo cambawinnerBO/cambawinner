@@ -53,7 +53,7 @@ export default function PickCard({
         </div>
       ) : (
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(90,107,133,0.08)', border: '1px solid rgba(90,107,133,0.2)', borderRadius: '999px', padding: '3px 10px', marginBottom: '6px' }}>
-          <span style={{ fontSize: '11px' }}>★</span>
+          <span style={{ fontSize: '11px' }}>💡</span>
           <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 600, color: '#5A6B85', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Recomendado</span>
         </div>
       )}
