@@ -240,14 +240,6 @@ export default function PicksPage() {
     return (
       <div style={CONTAINER}>
         <TituloPagina />
-        {picksVip.length > 0 && (
-          <div style={{ marginBottom: '16px' }}>
-            {labelVip}
-            {picksVip.map(pick => (
-              <PickBloqueado key={pick.id} isPickDelDia={pick.is_pick_del_dia} />
-            ))}
-          </div>
-        )}
         <MuroRegistro />
       </div>
     );
@@ -261,8 +253,8 @@ export default function PicksPage() {
       <BarraResultados stats={stats} />
       <FiltroTabs filtro={filtro} onFiltro={setFiltro} stats={stats} />
 
-      {/* VIP bloqueado para FREE */}
-      {!esVip && picksVip.length > 0 && (
+      {/* VIP bloqueado solo para usuarios FREE logueados */}
+      {usuario && perfil?.role === 'free' && picksVip.length > 0 && (
         <div style={{ marginBottom: '16px' }}>
           {labelVip}
           {picksVip.map(pick => (
