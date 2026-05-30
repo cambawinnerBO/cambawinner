@@ -40,6 +40,15 @@ export async function getUsuarioActual() {
   return user ?? null;
 }
 
+export async function aceptarTerminos(userId) {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ terminos_aceptados: true, terminos_fecha: new Date().toISOString() })
+    .eq('id', userId);
+  if (error) return { error: error.message };
+  return { error: null };
+}
+
 export async function getPerfil(userId) {
   if (!userId) return { data: null, error: 'Sin usuario' };
   const { data, error } = await supabase

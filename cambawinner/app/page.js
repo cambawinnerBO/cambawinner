@@ -338,7 +338,7 @@ export default function HomePage() {
     if (authLoading) return;
     async function cargarDatos() {
       const [pick, picks] = await Promise.all([
-        obtenerPickDelDia(esVip),
+        obtenerPickDelDia(false),
         obtenerUltimosPicks(2),
       ]);
       setPickDelDia(pick.data);

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import PickCard from '@/components/picks/PickCard';
+import ModalTerminos from '@/components/ui/ModalTerminos';
 import { Theme } from '@/lib/theme';
 import { useAuth } from '@/lib/context/AuthContext';
 import { useSettings } from '@/lib/hooks/useSettings';
@@ -222,9 +223,13 @@ function VistaSubscripcion({ settings }) {
 // ── Vista 2 — Zona VIP ─────────────────────────────────────────────────────
 
 function VistaVip() {
-  const [pickDelDia,       setPickDelDia]       = useState(null);
+  const { usuario, perfil } = useAuth();
+  const [pickDelDia,        setPickDelDia]        = useState(null);
   const [picksRecomendados, setPicksRecomendados] = useState([]);
-  const [loading,          setLoading]          = useState(true);
+  const [loading,           setLoading]           = useState(true);
+  const [terminosLocales,   setTerminosLocales]   = useState(false);
+
+  const debeVerTerminos = perfil?.role === 'vip' && !perfil?.terminos_aceptados && !terminosLocales;
 
   useEffect(() => {
     async function cargar() {
@@ -240,6 +245,13 @@ function VistaVip() {
   }, []);
 
   return (
+    <>
+      {debeVerTerminos && (
+        <ModalTerminos
+          userId={usuario?.id}
+          onAceptar={() => setTerminosLocales(true)}
+        />
+      )}
     <div style={CONTAINER}>
       {/* Header VIP */}
       <div style={{ textAlign: 'center', marginBottom: '24px' }}>
@@ -302,6 +314,7 @@ function VistaVip() {
 
       <PageFooter />
     </div>
+    </>
   );
 }
 
