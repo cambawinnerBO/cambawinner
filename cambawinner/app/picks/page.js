@@ -272,7 +272,7 @@ export default function PicksPage() {
           No hay picks en esta categoría.
         </p>
       ) : (
-        picks.map(pick => <PickCard key={pick.id} {...pick} isPickDelDia={pick.is_pick_del_dia} />)
+        picks.map(pick => <PickCard key={pick.id} {...pick} isPickDelDia={pick.is_pick_del_dia} isVip={pick.is_vip} />)
       )}
 
       {!esVipUser && <VipBannerPicks />}

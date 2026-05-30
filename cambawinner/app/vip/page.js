@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import PickCard from '@/components/picks/PickCard';
 import ModalTerminos from '@/components/ui/ModalTerminos';
+import WaterMark from '@/components/ui/WaterMark';
 import { Theme } from '@/lib/theme';
 import { useAuth } from '@/lib/context/AuthContext';
 import { useSettings } from '@/lib/hooks/useSettings';
@@ -246,6 +247,10 @@ function VistaVip() {
 
   return (
     <>
+      <WaterMark
+        username={perfil?.username || perfil?.email || ''}
+        email={usuario?.email || ''}
+      />
       {debeVerTerminos && (
         <ModalTerminos
           userId={usuario?.id}
@@ -273,7 +278,7 @@ function VistaVip() {
         {loading ? (
           <div style={{ background: Theme.Colors.Surface, borderRadius: Theme.Radius.MD, height: '120px', border: '0.5px solid rgba(10,37,64,0.08)' }} />
         ) : pickDelDia ? (
-          <PickCard {...pickDelDia} isPickDelDia={true} />
+          <PickCard {...pickDelDia} isPickDelDia={true} isVip={true} />
         ) : (
           <div style={{ background: Theme.Colors.Surface, borderRadius: Theme.Radius.LG, padding: '28px 20px', textAlign: 'center', border: '0.5px solid rgba(29,158,117,0.2)' }}>
             <p style={{ fontSize: '28px', margin: '0 0 10px' }}>🔒</p>
@@ -298,7 +303,7 @@ function VistaVip() {
           </p>
         ) : (
           picksRecomendados.map(pick => (
-            <PickCard key={pick.id} {...pick} isPickDelDia={false} />
+            <PickCard key={pick.id} {...pick} isPickDelDia={false} isVip={true} />
           ))
         )}
       </div>

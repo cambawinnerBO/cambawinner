@@ -29,7 +29,7 @@ function formatearHoraBolivia(fechaISO) {
 export default function PickCard({
   match, league, market, odds, stake,
   result, analysis, published_at, match_date, profit_bs,
-  isPickDelDia = false,
+  isPickDelDia = false, isVip = false,
 }) {
   const { settings } = useSettings();
   const fecha = formatFechaPublicada(published_at);
@@ -50,6 +50,11 @@ export default function PickCard({
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: '999px', padding: '3px 10px', marginBottom: '6px' }}>
           <span style={{ fontSize: '11px' }}>⚡</span>
           <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 600, color: '#1D9E75', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pick del día</span>
+        </div>
+      ) : isVip ? (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: '999px', padding: '3px 10px', marginBottom: '6px' }}>
+          <span style={{ fontSize: '11px' }}>💡</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 600, color: '#1D9E75', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Recomendado VIP</span>
         </div>
       ) : (
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(90,107,133,0.08)', border: '1px solid rgba(90,107,133,0.2)', borderRadius: '999px', padding: '3px 10px', marginBottom: '6px' }}>
