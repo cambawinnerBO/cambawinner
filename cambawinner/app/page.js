@@ -216,10 +216,10 @@ function WhatsAppBanner() {
       <span style={{ fontSize: '22px' }}>🔔</span>
       <div style={{ flex: 1 }}>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#F5F7FA', margin: 0 }}>
-          Recibí el pick del día en WhatsApp
+          Activá las notificaciones del canal
         </p>
         <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#B8D4F4', margin: '2px 0 0' }}>
-          Seguí el canal oficial de CambaWinner
+          Te avisamos por WhatsApp a que hora publicamos el pick del día
         </p>
       </div>
       <span style={{ fontSize: '12px', color: '#25D366', fontWeight: 600, fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap' }}>
