@@ -1,4 +1,5 @@
 export const BANKROLL_BASE = 1000;
+export const WHATSAPP_CANAL = 'https://whatsapp.com/channel/0029VbDOOoaHQbRv83CC6Q0H';
 
 export const Theme = {
   Colors: {

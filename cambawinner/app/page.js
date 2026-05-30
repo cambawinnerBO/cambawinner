@@ -4,7 +4,7 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import PickCard from '@/components/picks/PickCard';
 import Temporizador from '@/components/picks/Temporizador';
-import { Theme } from '@/lib/theme';
+import { Theme, WHATSAPP_CANAL } from '@/lib/theme';
 import {
   obtenerPickDelDia,
   obtenerUltimosPicks,
@@ -203,6 +203,32 @@ function SeccionUltimosPicks({ picks, loading }) {
   );
 }
 
+// ── Banner WhatsApp ────────────────────────────────────────────────────────
+
+function WhatsAppBanner() {
+  return (
+    <a
+      href={WHATSAPP_CANAL}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.25)', borderRadius: '10px', padding: '12px 16px', textDecoration: 'none', margin: '16px 0' }}
+    >
+      <span style={{ fontSize: '22px' }}>🔔</span>
+      <div style={{ flex: 1 }}>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#F5F7FA', margin: 0 }}>
+          Recibí el pick del día en WhatsApp
+        </p>
+        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '11px', color: '#B8D4F4', margin: '2px 0 0' }}>
+          Seguí el canal oficial de CambaWinner
+        </p>
+      </div>
+      <span style={{ fontSize: '12px', color: '#25D366', fontWeight: 600, fontFamily: 'Inter, sans-serif', whiteSpace: 'nowrap' }}>
+        Unirse →
+      </span>
+    </a>
+  );
+}
+
 // ── Sección 3 — Banner VIP ─────────────────────────────────────────────────
 
 function VipBanner() {
@@ -231,6 +257,10 @@ function PageFooter() {
         Plataforma de análisis deportivo. Las apuestas implican riesgo.
         <br />Solo mayores de 18 años. Jugá con responsabilidad.
       </p>
+      <a href={WHATSAPP_CANAL} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#25D366', fontSize: '12px', textDecoration: 'none', fontFamily: 'Inter, sans-serif', marginTop: '8px' }}>
+        <span>📱</span>
+        Canal oficial de WhatsApp
+      </a>
     </footer>
   );
 }
@@ -257,6 +287,7 @@ export default function HomePage() {
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: `${Theme.Spacing.LG} ${Theme.Spacing.LG} 80px` }}>
+      <WhatsAppBanner />
       <SeccionPickDelDia pick={pickDelDia} loading={loading} />
       <SeccionUltimosPicks picks={ultimosPicks} loading={loading} />
       <VipBanner />
