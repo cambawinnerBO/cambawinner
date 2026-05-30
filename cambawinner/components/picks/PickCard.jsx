@@ -2,6 +2,7 @@
 import Badge from '../ui/Badge';
 import Temporizador from './Temporizador';
 import { Theme } from '@/lib/theme';
+import { useSettings } from '@/lib/hooks/useSettings';
 
 const MONO = { fontFamily: "'JetBrains Mono', monospace" };
 
@@ -28,11 +29,14 @@ function formatearHoraBolivia(fechaISO) {
 export default function PickCard({
   match, league, market, odds, stake,
   result, analysis, published_at, match_date, profit_bs,
+  isPickDelDia = false,
 }) {
+  const { settings } = useSettings();
   const fecha = formatFechaPublicada(published_at);
   const hora  = formatearHoraBolivia(match_date);
 
-  const montoApostado = stake * 10;
+  const unitValue     = settings.bankroll_base / 100;
+  const montoApostado = stake * unitValue;
   const tieneResultado = (result === 'ganado' || result === 'perdido') && profit_bs != null;
   const retornoLabel = result === 'ganado'
     ? `+Bs ${Math.abs(Math.round(profit_bs))}`
@@ -42,6 +46,17 @@ export default function PickCard({
 
   return (
     <div style={{ background: Theme.Colors.Surface, borderRadius: Theme.Radius.MD, border: '0.5px solid rgba(10,37,64,0.1)', padding: '16px', marginBottom: '10px' }}>
+      {isPickDelDia ? (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(29,158,117,0.1)', border: '1px solid rgba(29,158,117,0.3)', borderRadius: '999px', padding: '3px 10px', marginBottom: '6px' }}>
+          <span style={{ fontSize: '11px' }}>⚡</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 600, color: '#1D9E75', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Pick del día</span>
+        </div>
+      ) : (
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', background: 'rgba(90,107,133,0.08)', border: '1px solid rgba(90,107,133,0.2)', borderRadius: '999px', padding: '3px 10px', marginBottom: '6px' }}>
+          <span style={{ fontSize: '11px' }}>★</span>
+          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 600, color: '#5A6B85', textTransform: 'uppercase', letterSpacing: '0.08em' }}>Recomendado</span>
+        </div>
+      )}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '4px' }}>
         <p style={{ fontSize: '0.875rem', fontWeight: 600, color: Theme.Colors.TextPrimary, margin: 0, flex: 1 }}>{match}</p>
         {result && <Badge result={result} />}

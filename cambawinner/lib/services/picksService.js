@@ -13,11 +13,12 @@ export async function publicarPick(datos) {
   return { data, error: null };
 }
 
-export async function obtenerPickDelDia() {
+export async function obtenerPickDelDia(isVip = false) {
   const { data, error } = await supabase
     .from('picks')
     .select('*')
     .eq('is_pick_del_dia', true)
+    .eq('is_vip', isVip)
     .order('published_at', { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -56,7 +57,7 @@ export async function obtenerUltimosPicks(limite = 5) {
     .from('picks')
     .select('*')
     .eq('is_vip', false)
-    .eq('is_pick_del_dia', false)
+    .neq('result', 'pendiente')
     .order('published_at', { ascending: false })
     .limit(limite);
   if (error) return { data: null, error: error.message };
@@ -83,6 +84,28 @@ export async function obtenerEstadisticas() {
     ganancia: Math.round(ganancia),
     yield: yieldPct,
   };
+}
+
+export async function obtenerPicksVip() {
+  const { data, error } = await supabase
+    .from('picks')
+    .select('id, is_pick_del_dia, published_at')
+    .eq('is_vip', true)
+    .order('published_at', { ascending: false })
+    .limit(5);
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function obtenerPicksVipCompleto() {
+  const { data, error } = await supabase
+    .from('picks')
+    .select('*')
+    .eq('is_vip', true)
+    .order('published_at', { ascending: false })
+    .limit(5);
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
 }
 
 export async function obtenerHistorialPicks(filtro = 'todos') {

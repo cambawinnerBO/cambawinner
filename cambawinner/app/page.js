@@ -4,7 +4,9 @@ import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import PickCard from '@/components/picks/PickCard';
 import Temporizador from '@/components/picks/Temporizador';
-import { Theme, WHATSAPP_CANAL } from '@/lib/theme';
+import { Theme } from '@/lib/theme';
+import { useAuth } from '@/lib/context/AuthContext';
+import { useSettings } from '@/lib/hooks/useSettings';
 import {
   obtenerPickDelDia,
   obtenerUltimosPicks,
@@ -96,9 +98,51 @@ function PickDelDiaVacio() {
   );
 }
 
+// ── Estado vacío VIP ──────────────────────────────────────────────────────
+
+function PickDelDiaVacioVip() {
+  return (
+    <div style={{ background: 'white', borderRadius: '12px', padding: '32px 24px', textAlign: 'center', border: '0.5px solid #E5E8EE', margin: '0 0 16px' }}>
+      <p style={{ fontSize: '32px', margin: '0 0 12px' }}>🔒</p>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: 600, color: '#0A2540', margin: '0 0 8px' }}>
+        Pick VIP en camino
+      </p>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#5A6B85', margin: 0, lineHeight: 1.6 }}>
+        El pick exclusivo para suscriptores VIP se publicará pronto. Seguí el canal de WhatsApp para recibir el aviso.
+      </p>
+    </div>
+  );
+}
+
+// ── Card pick resuelto ─────────────────────────────────────────────────────
+
+function PickDelDiaResuelto() {
+  return (
+    <div style={{ background: 'white', borderRadius: '12px', padding: '32px 24px', textAlign: 'center', border: '0.5px solid #E5E8EE', margin: '0 0 16px' }}>
+      <p style={{ fontSize: '32px', margin: '0 0 12px' }}>⚡</p>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '18px', fontWeight: 600, color: '#0A2540', margin: '0 0 8px' }}>
+        Pick del día resuelto
+      </p>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#5A6B85', margin: '0 0 4px', lineHeight: 1.6 }}>
+        El próximo pick se publicará pronto.
+      </p>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', color: '#5A6B85', margin: 0, lineHeight: 1.6 }}>
+        Seguí el canal de WhatsApp para recibir el aviso cuando se publique.
+      </p>
+    </div>
+  );
+}
+
 // ── Card del Pick del Día ──────────────────────────────────────────────────
 
 function PickDelDiaCard({ pick }) {
+  const { settings } = useSettings();
+  const unitValue = settings.bankroll_base / 100;
+
+  if (pick.result && pick.result !== 'pendiente') {
+    return <PickDelDiaResuelto />;
+  }
+
   const fechaFormateada = formatearFechaBolivia(pick.match_date);
 
   return (
@@ -141,12 +185,23 @@ function PickDelDiaCard({ pick }) {
 
       <Temporizador matchDate={pick.match_date} result={pick.result} />
 
+      {pick.result && pick.result !== 'pendiente' && (
+        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(29,158,117,0.15)', textAlign: 'center' }}>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#0A2540', margin: '0 0 4px' }}>
+            🔔 El próximo pick se publicará pronto
+          </p>
+          <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#5A6B85', margin: 0, lineHeight: 1.5 }}>
+            Seguí el canal de WhatsApp para recibir el aviso cuando se publique
+          </p>
+        </div>
+      )}
+
       <div style={{ textAlign: 'center', marginTop: '8px' }}>
         <p style={{ fontSize: '11px', color: Theme.Colors.TextSecondary, margin: '0' }}>
-          Stake {pick.stake} = Bs {pick.stake * 10} sobre un bank de Bs 1.000
+          Stake {pick.stake} = Bs {pick.stake * unitValue} sobre un bank de Bs {settings.bankroll_base}
         </p>
         <p style={{ fontSize: '11px', color: Theme.Colors.TextSecondary, margin: '4px 0 0' }}>
-          Stake 1 = Bs 10 · Stake {Math.round(pick.stake / 2)} = Bs {Math.round(pick.stake / 2) * 10} · Stake {pick.stake} = Bs {pick.stake * 10}
+          Stake 1 = Bs {unitValue} · Stake {Math.round(pick.stake / 2)} = Bs {Math.round(pick.stake / 2) * unitValue} · Stake {pick.stake} = Bs {pick.stake * unitValue}
         </p>
       </div>
 
@@ -156,14 +211,16 @@ function PickDelDiaCard({ pick }) {
 
 // ── Sección 1 — Pick del Día ───────────────────────────────────────────────
 
-function SeccionPickDelDia({ pick, loading }) {
+function SeccionPickDelDia({ pick, loading, esVip }) {
   return (
     <section style={{ marginBottom: Theme.Spacing.XXL }}>
       {loading
         ? <PickDelDiaSkeleton />
         : pick
           ? <PickDelDiaCard pick={pick} />
-          : <PickDelDiaVacio />
+          : esVip
+            ? <PickDelDiaVacioVip />
+            : <PickDelDiaVacio />
       }
     </section>
   );
@@ -191,7 +248,7 @@ function SeccionUltimosPicks({ picks, loading }) {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: Theme.Spacing.LG }}>
           {picks.map(pick => (
-            <PickCard key={pick.id} {...pick} />
+            <PickCard key={pick.id} {...pick} isPickDelDia={pick.is_pick_del_dia} />
           ))}
         </div>
       )}
@@ -206,9 +263,10 @@ function SeccionUltimosPicks({ picks, loading }) {
 // ── Banner WhatsApp ────────────────────────────────────────────────────────
 
 function WhatsAppBanner() {
+  const { settings } = useSettings();
   return (
     <a
-      href={WHATSAPP_CANAL}
+      href={settings.whatsapp_canal}
       target="_blank"
       rel="noopener noreferrer"
       style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(37,211,102,0.08)', border: '1px solid rgba(37,211,102,0.25)', borderRadius: '10px', padding: '12px 16px', textDecoration: 'none', margin: '16px 0' }}
@@ -248,6 +306,7 @@ function VipBanner() {
 // ── Sección 4 — Footer ─────────────────────────────────────────────────────
 
 function PageFooter() {
+  const { settings } = useSettings();
   return (
     <footer style={{ paddingTop: Theme.Spacing.XL, paddingBottom: Theme.Spacing.XL, borderTop: '0.5px solid rgba(184,212,244,0.1)', textAlign: 'center' }}>
       <p style={{ color: Theme.Colors.TextAccent, fontSize: '0.9375rem', fontWeight: 600, marginBottom: Theme.Spacing.SM }}>
@@ -257,7 +316,7 @@ function PageFooter() {
         Plataforma de análisis deportivo. Las apuestas implican riesgo.
         <br />Solo mayores de 18 años. Jugá con responsabilidad.
       </p>
-      <a href={WHATSAPP_CANAL} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#25D366', fontSize: '12px', textDecoration: 'none', fontFamily: 'Inter, sans-serif', marginTop: '8px' }}>
+      <a href={settings.whatsapp_canal} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#25D366', fontSize: '12px', textDecoration: 'none', fontFamily: 'Inter, sans-serif', marginTop: '8px' }}>
         <span>📱</span>
         Canal oficial de WhatsApp
       </a>
@@ -268,27 +327,31 @@ function PageFooter() {
 // ── Page ───────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+  const { perfil, loading: authLoading } = useAuth();
   const [pickDelDia,   setPickDelDia]   = useState(null);
   const [ultimosPicks, setUltimosPicks] = useState([]);
   const [loading,      setLoading]      = useState(true);
 
+  const esVip = perfil?.role === 'vip';
+
   useEffect(() => {
+    if (authLoading) return;
     async function cargarDatos() {
       const [pick, picks] = await Promise.all([
-        obtenerPickDelDia(),
-        obtenerUltimosPicks(3),
+        obtenerPickDelDia(esVip),
+        obtenerUltimosPicks(2),
       ]);
       setPickDelDia(pick.data);
       setUltimosPicks(picks.data ?? []);
       setLoading(false);
     }
     cargarDatos();
-  }, []);
+  }, [authLoading, esVip]);
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: `${Theme.Spacing.LG} ${Theme.Spacing.LG} 80px` }}>
       <WhatsAppBanner />
-      <SeccionPickDelDia pick={pickDelDia} loading={loading} />
+      <SeccionPickDelDia pick={pickDelDia} loading={loading || authLoading} esVip={esVip} />
       <SeccionUltimosPicks picks={ultimosPicks} loading={loading} />
       <VipBanner />
       <PageFooter />

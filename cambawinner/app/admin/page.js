@@ -15,8 +15,12 @@ import {
   activarVip,
   revocarVip,
 } from '@/lib/services/adminService';
+import {
+  obtenerSettings,
+  actualizarSettings,
+} from '@/lib/services/settingsService';
 
-const TABS   = ['Pick del Día', 'Picks', 'Resultados', 'Usuarios VIP'];
+const TABS = ['Pick del Día', 'Picks', 'Resultados', 'Usuarios VIP', 'Configuración'];
 const MONO   = { fontFamily: "'JetBrains Mono', monospace" };
 const inputS = {
   background: '#fff',
@@ -166,10 +170,6 @@ function PickForm({ defaultDelDia = true, onSuccess }) {
           <textarea name="analysis" value={form.analysis} onChange={onChange} rows={4} placeholder="Análisis del partido..." style={{ ...inputS, resize: 'vertical', lineHeight: 1.55 }} />
         </Field>
 
-        <label style={{display:'flex', alignItems:'center', gap:'8px', cursor:'pointer', marginBottom:'14px'}}>
-          <input type="checkbox" checked={form.is_pick_del_dia} onChange={e => setForm(p => ({ ...p, is_pick_del_dia: e.target.checked }))} />
-          <span style={{fontSize:'14px', color:'#0A2540'}}>Marcar como Pick del Día</span>
-        </label>
 
         <Alert text={msg?.text} type={msg?.type} />
 
@@ -375,6 +375,98 @@ function TabVip() {
   );
 }
 
+// ── Tab 5 — Configuración ──────────────────────────────────────
+
+const SETTINGS_DEFAULTS = {
+  id: '', whatsapp_numero: '', whatsapp_canal: '',
+  precio_semanal: 100, precio_mensual: 350, bankroll_base: 1000,
+};
+
+function SectionTitle({ children }) {
+  return <p style={{ fontSize: '11px', fontWeight: 700, color: Theme.Colors.TextSecondary, textTransform: 'uppercase', letterSpacing: '0.08em', margin: '0 0 12px' }}>{children}</p>;
+}
+
+function HelperText({ children }) {
+  return <p style={{ fontSize: '11px', color: Theme.Colors.TextMuted, margin: '4px 0 0' }}>{children}</p>;
+}
+
+function TabConfiguracion() {
+  const [form,    setForm]    = useState(SETTINGS_DEFAULTS);
+  const [cargando, setCargando] = useState(true);
+  const [saving,  setSaving]  = useState(false);
+  const [msg,     setMsg]     = useState(null);
+
+  useEffect(() => {
+    obtenerSettings().then(({ data }) => {
+      if (data) setForm(data);
+      setCargando(false);
+    });
+  }, []);
+
+  function onChange(e) {
+    const { name, value, type } = e.target;
+    setForm(p => ({ ...p, [name]: type === 'number' ? Number(value) : value }));
+  }
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    setSaving(true);
+    setMsg(null);
+    const { error } = await actualizarSettings(form);
+    setSaving(false);
+    setMsg(error
+      ? { type: 'error', text: error }
+      : { type: 'success', text: 'Configuración guardada ✓' }
+    );
+  }
+
+  if (cargando) return <p style={{ color: Theme.Colors.TextAccent }}>Cargando configuración…</p>;
+
+  return (
+    <>
+      <h2 style={{ fontSize: '1rem', fontWeight: 700, color: Theme.Colors.TextInverse, marginBottom: '16px' }}>Configuración</h2>
+      <form onSubmit={onSubmit}>
+        <Card>
+          <SectionTitle>WhatsApp</SectionTitle>
+          <Field label="Número para recibir suscripciones">
+            <input name="whatsapp_numero" value={form.whatsapp_numero} onChange={onChange} placeholder="591XXXXXXXX" style={inputS} />
+            <HelperText>Formato: 591 + número sin 0</HelperText>
+          </Field>
+          <Field label="Link del canal de WhatsApp">
+            <input name="whatsapp_canal" value={form.whatsapp_canal} onChange={onChange} placeholder="https://whatsapp.com/channel/..." style={inputS} />
+          </Field>
+        </Card>
+
+        <Card>
+          <SectionTitle>Precios VIP</SectionTitle>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0 16px' }}>
+            <Field label="Precio plan semanal (Bs)">
+              <input type="number" name="precio_semanal" value={form.precio_semanal} onChange={onChange} style={{ ...inputS, ...MONO }} />
+            </Field>
+            <Field label="Precio plan mensual (Bs)">
+              <input type="number" name="precio_mensual" value={form.precio_mensual} onChange={onChange} style={{ ...inputS, ...MONO }} />
+            </Field>
+          </div>
+        </Card>
+
+        <Card>
+          <SectionTitle>Bankroll</SectionTitle>
+          <Field label="Bankroll base para cálculos (Bs)">
+            <input type="number" name="bankroll_base" value={form.bankroll_base} onChange={onChange} style={{ ...inputS, ...MONO }} />
+            <HelperText>Base para calcular stakes. Ej: 1000 Bs → Stake 1 = Bs 10</HelperText>
+          </Field>
+        </Card>
+
+        <Alert text={msg?.text} type={msg?.type} />
+
+        <button type="submit" disabled={saving} style={{ marginTop: '12px', background: saving ? 'rgba(29,158,117,0.5)' : Theme.Colors.Green, color: '#fff', border: 'none', borderRadius: '8px', padding: '11px 24px', fontSize: '14px', fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer' }}>
+          {saving ? 'Guardando…' : 'Guardar configuración'}
+        </button>
+      </form>
+    </>
+  );
+}
+
 // ── Page ───────────────────────────────────────────────────────
 
 export default function AdminPage() {
@@ -398,12 +490,9 @@ export default function AdminPage() {
           <span style={{ background: 'rgba(29,158,117,0.15)', color: Theme.Colors.Green, border: `1px solid ${Theme.Colors.Green}`, borderRadius: '9999px', padding: '2px 10px', fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em' }}>ADMIN</span>
         </div>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button
-            onClick={() => window.open('https://www.cambawinner.site', '_blank')}
-            style={{ background: 'transparent', border: `1px solid ${Theme.Colors.Green}`, color: Theme.Colors.Green, borderRadius: '6px', padding: '6px 14px', fontSize: '13px', cursor: 'pointer' }}
-          >
-            Ver sitio →
-          </button>
+          <Link href="/" style={{ background: 'transparent', border: '1px solid #1D9E75', color: '#1D9E75', padding: '6px 14px', borderRadius: '6px', fontSize: '13px', fontFamily: 'Inter, sans-serif', textDecoration: 'none', display: 'inline-block' }}>
+            ← Volver al inicio
+          </Link>
           <button onClick={handleLogout} style={{ background: 'transparent', border: '1px solid rgba(184,212,244,0.3)', color: Theme.Colors.TextAccent, borderRadius: '6px', padding: '6px 14px', fontSize: '13px', cursor: 'pointer' }}>
             Cerrar sesión
           </button>
@@ -425,6 +514,7 @@ export default function AdminPage() {
         {tabActivo === 1 && <TabPicks />}
         {tabActivo === 2 && <TabResultados />}
         {tabActivo === 3 && <TabVip />}
+        {tabActivo === 4 && <TabConfiguracion />}
       </div>
     </div>
   );
