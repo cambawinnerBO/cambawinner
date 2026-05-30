@@ -83,8 +83,8 @@ export default function InstallBanner() {
           <div style={{ background: 'rgba(29,158,117,0.08)', borderRadius: '8px', padding: '10px 12px' }}>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#B8D4F4', margin: 0, lineHeight: 1.6 }}>
               1. Tocá el botón compartir <strong style={{ color: '#F5F7FA' }}>⬆️</strong> abajo{'\n'}
-              2. Seleccioná <strong style={{ color: '#F5F7FA' }}>"Añadir a pantalla de inicio"</strong>{'\n'}
-              3. Tocá <strong style={{ color: '#F5F7FA' }}>"Añadir"</strong>
+              2. Seleccioná <strong style={{ color: '#F5F7FA' }}>&quot;Añadir a pantalla de inicio&quot;</strong>{'\n'}
+              3. Tocá <strong style={{ color: '#F5F7FA' }}>&quot;Añadir&quot;</strong>
             </p>
           </div>
         </div>

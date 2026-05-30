@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { Theme } from '@/lib/theme';
 import { useAuth } from '@/lib/context/AuthContext';
@@ -77,7 +78,7 @@ export default function Header({ simple = false }) {
     >
       <Link href="/" style={{ textDecoration: 'none' }}>
         <div style={{display:'flex', alignItems:'center', gap:'8px'}}>
-          <img
+          <Image
             src="/logo/cambawinner-isotipo.svg"
             alt="CambaWinner logo"
             width={32}

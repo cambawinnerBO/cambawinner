@@ -222,7 +222,7 @@ export default function PicksPage() {
       setLoading(false);
     }
     cargar();
-  }, [filtro]);
+  }, [filtro, esVip]);
 
   // VIP/admin: reemplaza teaser con datos completos
   useEffect(() => {
