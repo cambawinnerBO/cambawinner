@@ -135,7 +135,7 @@ function PickDelDiaCard({ pick }) {
 
       <Divider />
 
-      <p style={{ fontSize: '0.9375rem', color: Theme.Colors.TextSecondary, lineHeight: 1.65, marginBottom: Theme.Spacing.LG }}>
+      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '14px', color: '#5A6B85', lineHeight: 1.7, margin: '12px 0', whiteSpace: 'pre-line' }}>
         {pick.analysis}
       </p>
 

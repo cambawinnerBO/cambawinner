@@ -86,7 +86,7 @@ export default function PickCard({
       )}
 
       {analysis && (
-        <p style={{ fontSize: '13px', color: Theme.Colors.TextMuted, lineHeight: 1.55, margin: 0, paddingTop: '10px', borderTop: '0.5px solid rgba(10,37,64,0.08)' }}>
+        <p style={{ fontSize: '13px', color: Theme.Colors.TextMuted, lineHeight: 1.55, margin: 0, paddingTop: '10px', borderTop: '0.5px solid rgba(10,37,64,0.08)', whiteSpace: 'pre-line' }}>
           {analysis}
         </p>
       )}
