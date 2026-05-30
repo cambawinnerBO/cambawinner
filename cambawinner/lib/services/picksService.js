@@ -97,6 +97,17 @@ export async function obtenerPicksVip() {
   return { data, error: null };
 }
 
+export async function obtenerPicksRecomendadosVip() {
+  const { data, error } = await supabase
+    .from('picks')
+    .select('*')
+    .eq('is_vip', true)
+    .eq('is_pick_del_dia', false)
+    .order('published_at', { ascending: false });
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
 export async function obtenerPicksVipCompleto() {
   const { data, error } = await supabase
     .from('picks')
