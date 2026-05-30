@@ -205,51 +205,49 @@ export default function PicksPage() {
   const [filtro,   setFiltro]   = useState('todos');
   const [loading,  setLoading]  = useState(true);
 
-  const esVipUser = perfil?.role === 'vip' || perfil?.role === 'admin';
+  const esVip = perfil?.role === 'vip' || perfil?.role === 'admin';
 
+  // Carga principal — siempre, incluye teaser VIP
   useEffect(() => {
-    if (authLoading) return;
-    const fn = esVipUser ? obtenerPicksVipCompleto : obtenerPicksVip;
-    fn().then(({ data }) => setPicksVip(data ?? []));
-  }, [authLoading, esVipUser]);
-
-  useEffect(() => {
-    if (!usuario) return;
-    obtenerEstadisticasCompletas().then(setStats);
-  }, [usuario]);
-
-  useEffect(() => {
-    if (!usuario) return;
-    async function cargarPicks() {
+    async function cargar() {
       setLoading(true);
-      const { data } = await obtenerHistorialPicks(filtro);
-      setPicks(data ?? []);
+      const [statsData, picksData, vipData] = await Promise.all([
+        obtenerEstadisticasCompletas(),
+        obtenerHistorialPicks(filtro),
+        obtenerPicksVip(),
+      ]);
+      setStats(statsData);
+      setPicks(picksData.data ?? []);
+      if (!esVip) setPicksVip(vipData.data ?? []);
       setLoading(false);
     }
-    cargarPicks();
-  }, [filtro, usuario]);
+    cargar();
+  }, [filtro]);
 
-  function SeccionVip() {
-    if (!picksVip.length) return null;
-    return (
-      <div style={{ marginBottom: '16px' }}>
-        <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#B8D4F4', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>
-          🔒 Exclusivo VIP
-        </p>
-        {picksVip.map(pick =>
-          esVipUser
-            ? <PickCard key={pick.id} {...pick} isPickDelDia={pick.is_pick_del_dia} />
-            : <PickBloqueado key={pick.id} isPickDelDia={pick.is_pick_del_dia} />
-        )}
-      </div>
-    );
-  }
+  // VIP/admin: reemplaza teaser con datos completos
+  useEffect(() => {
+    if (authLoading || !esVip) return;
+    obtenerPicksVipCompleto().then(({ data }) => setPicksVip(data ?? []));
+  }, [authLoading, esVip]);
+
+  const labelVip = (
+    <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '12px', color: '#B8D4F4', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>
+      🔒 Exclusivo VIP
+    </p>
+  );
 
   if (!authLoading && !usuario) {
     return (
       <div style={CONTAINER}>
         <TituloPagina />
-        <SeccionVip />
+        {picksVip.length > 0 && (
+          <div style={{ marginBottom: '16px' }}>
+            {labelVip}
+            {picksVip.map(pick => (
+              <PickBloqueado key={pick.id} isPickDelDia={pick.is_pick_del_dia} />
+            ))}
+          </div>
+        )}
         <MuroRegistro />
       </div>
     );
@@ -263,7 +261,25 @@ export default function PicksPage() {
       <BarraResultados stats={stats} />
       <FiltroTabs filtro={filtro} onFiltro={setFiltro} stats={stats} />
 
-      <SeccionVip />
+      {/* VIP bloqueado para FREE */}
+      {!esVip && picksVip.length > 0 && (
+        <div style={{ marginBottom: '16px' }}>
+          {labelVip}
+          {picksVip.map(pick => (
+            <PickBloqueado key={pick.id} isPickDelDia={pick.is_pick_del_dia} />
+          ))}
+        </div>
+      )}
+
+      {/* VIP real para suscriptores */}
+      {esVip && picksVip.length > 0 && (
+        <div style={{ marginBottom: '16px' }}>
+          {labelVip}
+          {picksVip.map(pick => (
+            <PickCard key={pick.id} {...pick} isPickDelDia={pick.is_pick_del_dia} isVip={true} />
+          ))}
+        </div>
+      )}
 
       {authLoading || loading ? (
         [0, 1, 2].map(i => <PickSkeleton key={i} />)
@@ -275,7 +291,7 @@ export default function PicksPage() {
         picks.map(pick => <PickCard key={pick.id} {...pick} isPickDelDia={pick.is_pick_del_dia} isVip={pick.is_vip} />)
       )}
 
-      {!esVipUser && <VipBannerPicks />}
+      {!esVip && <VipBannerPicks />}
       <PageFooter />
     </div>
   );

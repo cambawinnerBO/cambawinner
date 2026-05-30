@@ -89,7 +89,7 @@ export async function obtenerEstadisticas() {
 export async function obtenerPicksVip() {
   const { data, error } = await supabase
     .from('picks')
-    .select('id, is_pick_del_dia, published_at')
+    .select('id, is_pick_del_dia, published_at, result')
     .eq('is_vip', true)
     .order('published_at', { ascending: false })
     .limit(5);

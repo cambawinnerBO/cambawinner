@@ -2,6 +2,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/lib/context/AuthContext';
 import SiteShell from '@/components/layout/SiteShell';
+import InstallBanner from '@/components/ui/InstallBanner';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -23,6 +24,14 @@ export const metadata = {
   icons: {
     icon: '/favicon.ico',
     apple: '/icons/cambawinner-icon-192x192.png',
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'CambaWinner',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
   },
   openGraph: {
     title: 'CambaWinner',
@@ -47,6 +56,7 @@ export default function RootLayout({ children }) {
       <body>
         <AuthProvider>
           <SiteShell>{children}</SiteShell>
+          <InstallBanner />
         </AuthProvider>
       </body>
     </html>
