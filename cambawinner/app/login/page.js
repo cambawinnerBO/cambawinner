@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/lib/context/AuthContext';
 import { Theme } from '@/lib/theme';
 
@@ -51,7 +52,7 @@ export default function LoginPage() {
         boxShadow: '0 4px 32px rgba(0,0,0,0.3)',
       }}>
         <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <img src="/logo/cambawinner-isotipo.svg" alt="CambaWinner" width={48} height={48} style={{ display: 'block', margin: '0 auto 12px' }} />
+          <Image src="/logo/cambawinner-isotipo.svg" alt="CambaWinner" width={48} height={48} style={{ display: 'block', margin: '0 auto 12px' }} />
           <h1 style={{ fontSize: '1.375rem', fontWeight: 700, color: Theme.Colors.TextPrimary, marginBottom: '4px' }}>
             Iniciar sesión
           </h1>

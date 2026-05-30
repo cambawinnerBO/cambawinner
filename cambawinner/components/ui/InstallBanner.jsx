@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 
 export default function InstallBanner() {
   const [mostrar,        setMostrar]        = useState(false);
@@ -56,7 +57,7 @@ export default function InstallBanner() {
 
       {tipo === 'android' && (
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <img src="/icons/cambawinner-icon-192x192.png" width={36} height={36} style={{ borderRadius: '8px' }} alt="CambaWinner" />
+          <Image src="/icons/cambawinner-icon-192x192.png" width={36} height={36} style={{ borderRadius: '8px' }} alt="CambaWinner" />
           <div style={{ flex: 1 }}>
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#F5F7FA', margin: 0 }}>
               Instalá CambaWinner
@@ -74,7 +75,7 @@ export default function InstallBanner() {
       {tipo === 'ios-safari' && (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-            <img src="/icons/cambawinner-icon-192x192.png" width={32} height={32} style={{ borderRadius: '8px' }} alt="CambaWinner" />
+            <Image src="/icons/cambawinner-icon-192x192.png" width={32} height={32} style={{ borderRadius: '8px' }} alt="CambaWinner" />
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#F5F7FA', margin: 0 }}>
               Instalá CambaWinner en tu iPhone
             </p>
@@ -92,7 +93,7 @@ export default function InstallBanner() {
       {tipo === 'ios-chrome' && (
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-            <img src="/icons/cambawinner-icon-192x192.png" width={32} height={32} style={{ borderRadius: '8px' }} alt="CambaWinner" />
+            <Image src="/icons/cambawinner-icon-192x192.png" width={32} height={32} style={{ borderRadius: '8px' }} alt="CambaWinner" />
             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '13px', fontWeight: 600, color: '#F5F7FA', margin: 0 }}>
               Para instalar usá Safari
             </p>
