@@ -38,6 +38,7 @@ export default function LoginPage() {
     <div style={{
       minHeight: '100vh',
       display: 'flex',
+      flexDirection: 'column',
       alignItems: 'center',
       justifyContent: 'center',
       padding: '24px 16px',
@@ -112,6 +113,12 @@ export default function LoginPage() {
             Registrate
           </Link>
         </p>
+      </div>
+
+      <div style={{ textAlign: 'center', marginTop: '16px' }}>
+        <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#B8D4F4', fontFamily: 'Inter, sans-serif', fontSize: '13px', textDecoration: 'none', opacity: 0.8 }}>
+          ← Volver al inicio
+        </Link>
       </div>
     </div>
   );

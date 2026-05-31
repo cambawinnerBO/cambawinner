@@ -6,9 +6,10 @@ import WaterMark from '@/components/ui/WaterMark';
 import { Theme } from '@/lib/theme';
 import { useAuth } from '@/lib/context/AuthContext';
 import { useSettings } from '@/lib/hooks/useSettings';
+import Link from 'next/link';
 import {
   obtenerPickDelDia,
-  obtenerPicksRecomendadosVip,
+  obtenerPicksVipActivos,
 } from '@/lib/services/picksService';
 
 const MONO    = { fontFamily: "'JetBrains Mono', monospace" };
@@ -223,27 +224,43 @@ function VistaSubscripcion({ settings }) {
 
 // ── Vista 2 — Zona VIP ─────────────────────────────────────────────────────
 
+function CardEspera({ icono, titulo, subtitulo }) {
+  return (
+    <div style={{ background: Theme.Colors.Surface, borderRadius: Theme.Radius.LG, padding: '28px 20px', textAlign: 'center', border: '0.5px solid rgba(29,158,117,0.2)', marginBottom: '8px' }}>
+      <p style={{ fontSize: '28px', margin: '0 0 10px' }}>{icono}</p>
+      <p style={{ ...INTER, fontSize: '15px', fontWeight: 600, color: Theme.Colors.TextPrimary, margin: '0 0 6px' }}>{titulo}</p>
+      <p style={{ ...INTER, fontSize: '13px', color: Theme.Colors.TextSecondary, margin: 0, lineHeight: 1.55 }}>{subtitulo}</p>
+    </div>
+  );
+}
+
+function SkeletonCard() {
+  return <div style={{ background: Theme.Colors.Surface, borderRadius: Theme.Radius.MD, height: '80px', marginBottom: '10px', border: '0.5px solid rgba(10,37,64,0.08)' }} />;
+}
+
 function VistaVip() {
   const { usuario, perfil } = useAuth();
-  const [pickDelDia,        setPickDelDia]        = useState(null);
-  const [picksRecomendados, setPicksRecomendados] = useState([]);
-  const [loading,           setLoading]           = useState(true);
-  const [terminosLocales,   setTerminosLocales]   = useState(false);
+  const [pickDelDiaVip,   setPickDelDiaVip]   = useState(null);
+  const [picksActivos,    setPicksActivos]    = useState([]);
+  const [loading,         setLoading]         = useState(true);
+  const [terminosLocales, setTerminosLocales] = useState(false);
 
   const debeVerTerminos = perfil?.role === 'vip' && !perfil?.terminos_aceptados && !terminosLocales;
 
   useEffect(() => {
     async function cargar() {
-      const [dia, rec] = await Promise.all([
+      const [dia, activos] = await Promise.all([
         obtenerPickDelDia(true),
-        obtenerPicksRecomendadosVip(),
+        obtenerPicksVipActivos(),
       ]);
-      setPickDelDia(dia.data);
-      setPicksRecomendados(rec.data ?? []);
+      setPickDelDiaVip(dia.data);
+      setPicksActivos(activos.data ?? []);
       setLoading(false);
     }
     cargar();
   }, []);
+
+  const pickDelDiaPendiente = pickDelDiaVip?.result === 'pendiente' ? pickDelDiaVip : null;
 
   return (
     <>
@@ -258,7 +275,8 @@ function VistaVip() {
         />
       )}
     <div style={CONTAINER}>
-      {/* Header VIP */}
+
+      {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '24px' }}>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(29,158,117,0.12)', border: '1px solid rgba(29,158,117,0.4)', borderRadius: '999px', padding: '4px 14px', marginBottom: '12px' }}>
           <span style={{ fontSize: '12px' }}>🔒</span>
@@ -272,50 +290,47 @@ function VistaVip() {
         </p>
       </div>
 
-      {/* Pick del día VIP */}
+      {/* ⚡ Pick del día VIP */}
       <div style={{ marginBottom: '24px' }}>
         <SectionLabel>⚡ Pick del día VIP</SectionLabel>
-        {loading ? (
-          <div style={{ background: Theme.Colors.Surface, borderRadius: Theme.Radius.MD, height: '120px', border: '0.5px solid rgba(10,37,64,0.08)' }} />
-        ) : pickDelDia ? (
-          <PickCard {...pickDelDia} isPickDelDia={true} isVip={true} />
+        {loading ? <SkeletonCard /> : pickDelDiaPendiente ? (
+          <PickCard {...pickDelDiaPendiente} isPickDelDia={true} isVip={true} />
         ) : (
-          <div style={{ background: Theme.Colors.Surface, borderRadius: Theme.Radius.LG, padding: '28px 20px', textAlign: 'center', border: '0.5px solid rgba(29,158,117,0.2)' }}>
-            <p style={{ fontSize: '28px', margin: '0 0 10px' }}>🔒</p>
-            <p style={{ ...INTER, fontSize: '15px', fontWeight: 600, color: Theme.Colors.TextPrimary, margin: '0 0 6px' }}>Pick VIP en camino</p>
-            <p style={{ ...INTER, fontSize: '13px', color: Theme.Colors.TextSecondary, margin: 0, lineHeight: 1.55 }}>
-              Se publicará pronto. Seguí el canal de WhatsApp para recibir el aviso.
-            </p>
-          </div>
+          <CardEspera
+            icono="🔒"
+            titulo="Pick VIP en camino"
+            subtitulo="Se publicará pronto. Seguí el canal de WhatsApp para recibir el aviso."
+          />
         )}
       </div>
 
-      {/* Picks recomendados VIP */}
+      {/* 💡 Picks recomendados */}
       <div style={{ marginBottom: '24px' }}>
-        <SectionLabel>★ Picks recomendados VIP</SectionLabel>
+        <SectionLabel>💡 Picks recomendados</SectionLabel>
         {loading ? (
-          [0, 1].map(i => (
-            <div key={i} style={{ background: Theme.Colors.Surface, borderRadius: Theme.Radius.MD, height: '80px', marginBottom: '10px', border: '0.5px solid rgba(10,37,64,0.08)' }} />
-          ))
-        ) : picksRecomendados.length === 0 ? (
-          <p style={{ ...INTER, fontSize: '14px', color: Theme.Colors.TextAccent, textAlign: 'center', padding: '20px 0' }}>
-            Los picks recomendados VIP aparecerán aquí.
-          </p>
+          [0, 1].map(i => <SkeletonCard key={i} />)
+        ) : picksActivos.length === 0 ? (
+          <CardEspera
+            icono="💡"
+            titulo="Picks recomendados en camino"
+            subtitulo="Cuando publiquemos picks adicionales aparecerán aquí."
+          />
         ) : (
-          picksRecomendados.map(pick => (
+          picksActivos.map(pick => (
             <PickCard key={pick.id} {...pick} isPickDelDia={false} isVip={true} />
           ))
         )}
       </div>
 
+      {/* Botón historial */}
+      <Link href="/vip/historial" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'transparent', border: '1px solid rgba(29,158,117,0.4)', borderRadius: '8px', padding: '12px', color: '#1D9E75', ...INTER, fontSize: '14px', fontWeight: 500, textDecoration: 'none', margin: '8px 0' }}>
+        📋 Ver historial VIP →
+      </Link>
+
       {/* Separador */}
-      <div style={{ textAlign: 'center', margin: '16px 0 24px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ flex: 1, height: '1px', background: 'rgba(184,212,244,0.1)' }} />
-        <a href="/picks" style={{ ...INTER, fontSize: '12px', color: Theme.Colors.TextAccent, textDecoration: 'none', whiteSpace: 'nowrap' }}>
-          Ver picks free →
-        </a>
-        <div style={{ flex: 1, height: '1px', background: 'rgba(184,212,244,0.1)' }} />
-      </div>
+      <p style={{ ...INTER, fontSize: '12px', color: '#B8D4F4', textAlign: 'center', margin: '24px 0', opacity: 0.6 }}>
+        ── Los picks FREE están en la sección Picks ──
+      </p>
 
       <PageFooter />
     </div>

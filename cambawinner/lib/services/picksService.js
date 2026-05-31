@@ -97,6 +97,60 @@ export async function obtenerPicksVip() {
   return { data, error: null };
 }
 
+export async function obtenerPicksVipActivos() {
+  const { data, error } = await supabase
+    .from('picks')
+    .select('*')
+    .eq('is_vip', true)
+    .eq('is_pick_del_dia', false)
+    .eq('result', 'pendiente')
+    .order('published_at', { ascending: false });
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function obtenerEstadisticasVip() {
+  const { data: picks, error } = await supabase
+    .from('picks')
+    .select('result, profit_bs, stake')
+    .eq('is_vip', true)
+    .in('result', ['ganado', 'perdido', 'anulado']);
+
+  if (error || !picks) return { totalPicks: 0, ganados: 0, perdidos: 0, anulados: 0, ganancia: 0, yield: 0 };
+
+  const totalPicks    = picks.length;
+  const ganados       = picks.filter(p => p.result === 'ganado').length;
+  const perdidos      = picks.filter(p => p.result === 'perdido').length;
+  const anulados      = picks.filter(p => p.result === 'anulado').length;
+  const ganancia      = picks.reduce((sum, p) => sum + (p.profit_bs || 0), 0);
+  const totalApostado = picks.reduce((sum, p) => sum + (p.stake * 10), 0);
+  const yieldPct      = totalApostado > 0 ? Math.round((ganancia / totalApostado) * 1000) / 10 : 0;
+
+  return { totalPicks, ganados, perdidos, anulados, ganancia: Math.round(ganancia), yield: yieldPct };
+}
+
+export async function obtenerHistorialVip(limite = 50) {
+  const { data, error } = await supabase
+    .from('picks')
+    .select('*')
+    .eq('is_vip', true)
+    .in('result', ['ganado', 'perdido', 'anulado'])
+    .order('published_at', { ascending: false })
+    .limit(limite);
+  if (error) return { data: null, error: error.message };
+  return { data, error: null };
+}
+
+export async function obtenerTotalHistorialVip() {
+  const { count, error } = await supabase
+    .from('picks')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_vip', true)
+    .in('result', ['ganado', 'perdido', 'anulado']);
+  if (error) return { data: 0, error: error.message };
+  return { data: count ?? 0, error: null };
+}
+
 export async function obtenerPicksRecomendadosVip() {
   const { data, error } = await supabase
     .from('picks')

@@ -195,41 +195,10 @@ function TabPickDelDia() {
 // ── Tab 2 — Picks ──────────────────────────────────────────────
 
 function TabPicks() {
-  const [picks, setPicks]   = useState([]);
-  const [cargando, setCargando] = useState(true);
-
-  const cargar = useCallback(async () => {
-    setCargando(true);
-    const { data } = await obtenerUltimosPicks(10);
-    setPicks(data ?? []);
-    setCargando(false);
-  }, []);
-
-  useEffect(() => { cargar(); }, [cargar]);
-
   return (
     <>
       <h2 style={{ fontSize: '1rem', fontWeight: 700, color: Theme.Colors.TextInverse, marginBottom: '16px' }}>Publicar Pick</h2>
-      <PickForm defaultDelDia={false} onSuccess={cargar} />
-
-      <h2 style={{ fontSize: '1rem', fontWeight: 700, color: Theme.Colors.TextInverse, margin: '24px 0 12px' }}>Últimos 10 picks</h2>
-      {cargando ? <p style={{ color: Theme.Colors.TextAccent }}>Cargando…</p>
-        : picks.length === 0 ? <p style={{ color: Theme.Colors.TextAccent }}>No hay picks publicados.</p>
-        : picks.map(p => (
-          <Card key={p.id} style={{ padding: '12px 16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
-              <div style={{ minWidth: 0 }}>
-                <p style={{ fontSize: '13px', fontWeight: 600, color: Theme.Colors.TextPrimary, margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.match}</p>
-                <p style={{ fontSize: '12px', color: Theme.Colors.TextSecondary, margin: '2px 0 0' }}>{p.market} · Stake {p.stake}</p>
-              </div>
-              <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                <span style={{ ...MONO, fontSize: '14px', fontWeight: 700, color: Theme.Colors.TextPrimary }}>{Number(p.odds).toFixed(2)}</span>
-                <ResultChip result={p.result} />
-              </div>
-            </div>
-          </Card>
-        ))
-      }
+      <PickForm defaultDelDia={false} />
     </>
   );
 }
