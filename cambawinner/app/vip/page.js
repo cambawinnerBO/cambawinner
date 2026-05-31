@@ -95,24 +95,26 @@ function VistaSubscripcion({ settings }) {
         key={key}
         onClick={() => setPlan(key)}
         style={{
-          flex: 1, minWidth: '140px', background: '#fff', borderRadius: '10px', padding: '16px',
-          border: sel
-            ? `2px solid ${Theme.Colors.Green}`
-            : destacado
-              ? `1.5px solid ${Theme.Colors.Green}`
-              : '1.5px solid rgba(10,37,64,0.12)',
+          flex: 1, minWidth: '140px',
+          background: sel ? 'rgba(29,158,117,0.08)' : 'white',
+          borderRadius: '10px', padding: '16px',
+          border: sel ? '2px solid #1D9E75' : '1px solid #E5E8EE',
           cursor: 'pointer', position: 'relative', textAlign: 'center',
-          boxShadow: sel ? '0 0 0 3px rgba(29,158,117,0.15)' : 'none',
-          transition: 'box-shadow 0.15s',
+          transition: 'border 0.15s, background 0.15s',
         }}
       >
+        {sel && (
+          <div style={{ position: 'absolute', top: '10px', right: '10px', width: '20px', height: '20px', borderRadius: '50%', background: '#1D9E75', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontSize: '12px', fontWeight: 700 }}>
+            ✓
+          </div>
+        )}
         {destacado && (
           <div style={{ position: 'absolute', top: '-10px', left: '50%', transform: 'translateX(-50%)', background: Theme.Colors.Green, color: '#fff', borderRadius: '999px', padding: '2px 10px', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', whiteSpace: 'nowrap' }}>
             MÁS POPULAR
           </div>
         )}
         <p style={{ ...INTER, fontSize: '13px', fontWeight: 600, color: Theme.Colors.TextPrimary, margin: '0 0 8px' }}>{titulo}</p>
-        <p style={{ ...MONO, fontSize: '26px', fontWeight: 700, color: Theme.Colors.Green, margin: '0 0 2px' }}>Bs {precio}</p>
+        <p style={{ ...MONO, fontSize: '26px', fontWeight: 700, color: sel ? '#1D9E75' : '#0A2540', margin: '0 0 2px' }}>Bs {precio}</p>
         <p style={{ ...INTER, fontSize: '12px', color: Theme.Colors.TextSecondary, margin: 0 }}>{periodo}</p>
         {ahorro && <p style={{ ...INTER, fontSize: '11px', color: Theme.Colors.Green, margin: '6px 0 0' }}>{ahorro}</p>}
       </div>
